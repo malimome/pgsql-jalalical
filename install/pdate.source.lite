@@ -1,0 +1,118 @@
+CREATE FUNCTION pdate_in(cstring)
+   RETURNS pdate
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION pdate_out(pdate)
+   RETURNS cstring
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE FUNCTION pdate_recv(internal)
+   RETURNS pdate
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE FUNCTION pdate_send(pdate)
+   RETURNS bytea
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE TYPE pdate (
+   internallength = 4, 
+   input = pdate_in,
+   output = pdate_out,
+   receive = pdate_recv,
+   send = pdate_send,
+	 PASSEDBYVALUE,
+   alignment = int4 
+);
+
+CREATE FUNCTION ptimestamp_in(cstring)
+   RETURNS ptimestamp
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION ptimestamp_out(ptimestamp)
+   RETURNS cstring
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE FUNCTION ptimestamp_recv(internal)
+   RETURNS ptimestamp
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE FUNCTION ptimestamp_send(ptimestamp)
+   RETURNS bytea
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE TYPE ptimestamp (
+   internallength = 8, 
+   input = ptimestamp_in,
+   output = ptimestamp_out,
+   receive = ptimestamp_recv,
+   send = ptimestamp_send,
+   alignment = double
+);
+
+CREATE FUNCTION ptimestamptz_in(cstring)
+   RETURNS ptimestamptz
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION ptimestamptz_out(ptimestamptz)
+   RETURNS cstring
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE FUNCTION ptimestamptz_recv(internal)
+   RETURNS ptimestamptz
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE FUNCTION ptimestamptz_send(ptimestamptz)
+   RETURNS bytea
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE TYPE ptimestamptz (
+   internallength = 8, 
+   input = ptimestamptz_in,
+   output = ptimestamptz_out,
+   receive = ptimestamptz_recv,
+   send = ptimestamptz_send,
+   alignment = double
+);
+
+
+CREATE TABLE test_pdate (
+	a	pdate,
+  b ptimestamp,
+  c ptimestamptz
+);
+
+
+INSERT INTO test_pdate VALUES ('1399-12-3', '1340-12-29 03:03:03', '1340-12-29 03:03:03');
+INSERT INTO test_pdate VALUES ('1399-12-3', '1958-12-19 05:04', '1390-12-29 03:03:03');
+INSERT INTO test_pdate VALUES (pdate 'now', ptimestamp 'today', ptimestamptz 'now');
+
+SELECT * FROM test_pdate;
+
+-- clean up the example
+DROP TABLE test_pdate;
+DROP TYPE pdate CASCADE;
+DROP TYPE ptimestamp CASCADE;
+DROP TYPE ptimestamptz CASCADE;
+
+

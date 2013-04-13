@@ -1,0 +1,772 @@
+------------------------------------------------------------
+-- Creating Types and needed initial functions
+------------------------------------------------------------
+------------------------ TYPE PDATE ------------------------
+
+CREATE FUNCTION pdate_in(cstring)
+   RETURNS pdate
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION pdate_out(pdate)
+   RETURNS cstring
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION pdate_recv(internal)
+   RETURNS pdate
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION pdate_send(pdate)
+   RETURNS bytea
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE TYPE pdate (
+   internallength = 4, 
+   input = pdate_in,
+   output = pdate_out,
+   receive = pdate_recv,
+   send = pdate_send,
+	 PASSEDBYVALUE,
+   alignment = int4 
+);
+------------------------ TYPE PTIMESTAMP ------------------------
+CREATE FUNCTION ptimestamp_in(cstring)
+   RETURNS ptimestamp
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION ptimestamp_out(ptimestamp)
+   RETURNS cstring
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE FUNCTION ptimestamp_recv(internal)
+   RETURNS ptimestamp
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE FUNCTION ptimestamp_send(ptimestamp)
+   RETURNS bytea
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE TYPE ptimestamp (
+   internallength = 8, 
+   input = ptimestamp_in,
+   output = ptimestamp_out,
+   receive = ptimestamp_recv,
+   send = ptimestamp_send,
+   alignment = double
+);
+
+------------------------ TYPE PTIMESTAMPTZ ------------------------
+CREATE FUNCTION ptimestamptz_in(cstring)
+   RETURNS ptimestamptz
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION ptimestamptz_out(ptimestamptz)
+   RETURNS cstring
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE FUNCTION ptimestamptz_recv(internal)
+   RETURNS ptimestamptz
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE FUNCTION ptimestamptz_send(ptimestamptz)
+   RETURNS bytea
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+
+CREATE TYPE ptimestamptz (
+   internallength = 8, 
+   input = ptimestamptz_in,
+   output = ptimestamptz_out,
+   receive = ptimestamptz_recv,
+   send = ptimestamptz_send,
+   alignment = double
+);
+
+------------------------------------------------------------
+-- Creating Comparison functions for type PDATE
+------------------------------------------------------------
+
+CREATE FUNCTION pdate_lt(pdate, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pdate_le(pdate, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pdate_eq(pdate, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pdate_ge(pdate, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pdate_gt(pdate, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR < (
+   leftarg = pdate, rightarg = pdate, procedure = pdate_lt,
+   commutator = > , negator = >= ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR <= (
+   leftarg = pdate, rightarg = pdate, procedure = pdate_le,
+   commutator = >= , negator = > ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR = (
+   leftarg = pdate, rightarg = pdate, procedure = pdate_eq,
+   commutator = = ,
+   -- leave out negator since we didn't create <> operator
+   -- negator = <> ,
+   restrict = eqsel, join = eqjoinsel
+);
+CREATE OPERATOR >= (
+   leftarg = pdate, rightarg = pdate, procedure = pdate_ge,
+   commutator = <= , negator = < ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+CREATE OPERATOR > (
+   leftarg = pdate, rightarg = pdate, procedure = pdate_gt,
+   commutator = < , negator = <= ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+
+-- create the support function too
+CREATE FUNCTION pdate_cmp(pdate, pdate) RETURNS int4
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+-- now we can make the operator class
+CREATE OPERATOR CLASS pdate_ops
+    DEFAULT FOR TYPE pdate USING btree AS
+        OPERATOR        1       < ,
+        OPERATOR        2       <= ,
+        OPERATOR        3       = ,
+        OPERATOR        4       >= ,
+        OPERATOR        5       > ,
+        FUNCTION        1       pdate_cmp(pdate, pdate);
+
+------------------------------------------------------------
+-- Creating Comparison functions for type PTIMESTAMP
+------------------------------------------------------------
+
+CREATE FUNCTION ptimestamp_lt(ptimestamp, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamp_le(ptimestamp, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamp_eq(ptimestamp, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamp_ge(ptimestamp, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamp_gt(ptimestamp, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR < (
+   leftarg = ptimestamp, rightarg = ptimestamp, procedure = ptimestamp_lt,
+   commutator = > , negator = >= ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR <= (
+   leftarg = ptimestamp, rightarg = ptimestamp, procedure = ptimestamp_le,
+   commutator = >= , negator = > ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR = (
+   leftarg = ptimestamp, rightarg = ptimestamp, procedure = ptimestamp_eq,
+   commutator = = ,
+   -- leave out negator since we didn't create <> operator
+   -- negator = <> ,
+   restrict = eqsel, join = eqjoinsel
+);
+CREATE OPERATOR >= (
+   leftarg = ptimestamp, rightarg = ptimestamp, procedure = ptimestamp_ge,
+   commutator = <= , negator = < ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+CREATE OPERATOR > (
+   leftarg = ptimestamp, rightarg = ptimestamp, procedure = ptimestamp_gt,
+   commutator = < , negator = <= ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+
+-- create the support function too
+CREATE FUNCTION ptimestamp_cmp(ptimestamp, ptimestamp) RETURNS int4
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+-- now we can make the operator class
+CREATE OPERATOR CLASS ptimestamp_ops
+    DEFAULT FOR TYPE ptimestamp USING btree AS
+        OPERATOR        1       < ,
+        OPERATOR        2       <= ,
+        OPERATOR        3       = ,
+        OPERATOR        4       >= ,
+        OPERATOR        5       > ,
+        FUNCTION        1       ptimestamp_cmp(ptimestamp, ptimestamp);
+
+--CREATE INDEX test_pdt_ind ON test_pdate
+--   USING btree(a pdate_ops);
+
+------------------------------------------------------------
+-- Creating sum/minus functions for type PDATE
+------------------------------------------------------------
+
+CREATE FUNCTION pdate_mi(pdate, pdate)
+   RETURNS int
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR - ( 
+   leftarg = pdate,
+   rightarg = pdate,
+   procedure = pdate_mi,
+   commutator = -
+);
+
+CREATE FUNCTION pdate_pli(pdate, int)
+   RETURNS pdate
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR + ( 
+   leftarg = pdate,
+   rightarg = int,
+   procedure = pdate_pli,
+   commutator = +
+);
+
+CREATE FUNCTION pdate_mii(pdate, int)
+   RETURNS pdate
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR - ( 
+   leftarg = pdate,
+   rightarg = int,
+   procedure = pdate_mii,
+   commutator = -
+);
+
+------------------------------------------------------------
+-- Creating INTERVAL sum/minus functions for type PDATE, PTIMESTAMP.
+------------------------------------------------------------
+
+CREATE FUNCTION ptimestamp_pl_interval(ptimestamp, interval)
+   RETURNS ptimestamp
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR + ( 
+   leftarg = ptimestamp,
+   rightarg = interval,
+   procedure = ptimestamp_pl_interval,
+   commutator = +
+);
+
+CREATE FUNCTION ptimestamp_mi_interval(ptimestamp, interval)
+   RETURNS ptimestamp
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR - ( 
+   leftarg = ptimestamp,
+   rightarg = interval,
+   procedure = ptimestamp_mi_interval,
+   commutator = -
+);
+
+CREATE FUNCTION pdate_pl_interval(pdate, interval)
+   RETURNS pdate
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR + ( 
+   leftarg = pdate,
+   rightarg = interval,
+   procedure = pdate_pl_interval,
+   commutator = +
+);
+
+CREATE FUNCTION pdate_mi_interval(pdate, interval)
+   RETURNS pdate
+   AS '_OBJWD_/pdate'
+   LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR - ( 
+   leftarg = pdate,
+   rightarg = interval,
+   procedure = pdate_mi_interval,
+   commutator = -
+);
+
+------------------------------------------------------------
+-- Creating Crosstype comparison functions for PDATE, PTIMESTAMP, PTIMESTAMPTZ 
+------------------------------------------------------------
+
+------------------- PDATE cmp PTIMESTAMP -------------------
+
+CREATE FUNCTION pdate_lt_ptimestamp(pdate, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pdate_le_ptimestamp(pdate, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pdate_eq_ptimestamp(pdate, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pdate_ge_ptimestamp(pdate, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pdate_gt_ptimestamp(pdate, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR < (
+   leftarg = pdate, rightarg = ptimestamp, procedure = pdate_lt_ptimestamp,
+   commutator = > , negator = >= ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR <= (
+   leftarg = pdate, rightarg = ptimestamp, procedure = pdate_le_ptimestamp,
+   commutator = >= , negator = > ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR = (
+   leftarg = pdate, rightarg = ptimestamp, procedure = pdate_eq_ptimestamp,
+   commutator = = ,
+   -- leave out negator since we didn't create <> operator
+   -- negator = <> ,
+   restrict = eqsel, join = eqjoinsel
+);
+CREATE OPERATOR >= (
+   leftarg = pdate, rightarg = ptimestamp, procedure = pdate_ge_ptimestamp,
+   commutator = <= , negator = < ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+CREATE OPERATOR > (
+   leftarg = pdate, rightarg = ptimestamp, procedure = pdate_gt_ptimestamp,
+   commutator = < , negator = <= ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+
+-- create the support function too
+CREATE FUNCTION pdate_cmp_ptimestamp(pdate, ptimestamp) RETURNS int4
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+-- now we can make the operator class
+CREATE OPERATOR CLASS pdate_ops_ptimestamp
+    FOR TYPE pdate USING btree AS
+        OPERATOR        1       < ,
+        OPERATOR        2       <= ,
+        OPERATOR        3       = ,
+        OPERATOR        4       >= ,
+        OPERATOR        5       > ,
+        FUNCTION        1       pdate_cmp_ptimestamp(pdate, ptimestamp);
+
+----------------------- PDATE cmp PTIMESTAMPTZ --------------------
+
+CREATE FUNCTION pdate_lt_ptimestamptz(pdate, ptimestamptz) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pdate_le_ptimestamptz(pdate, ptimestamptz) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pdate_eq_ptimestamptz(pdate, ptimestamptz) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pdate_ge_ptimestamptz(pdate, ptimestamptz) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pdate_gt_ptimestamptz(pdate, ptimestamptz) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR < (
+   leftarg = pdate, rightarg = ptimestamptz, procedure = pdate_lt_ptimestamptz,
+   commutator = > , negator = >= ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR <= (
+   leftarg = pdate, rightarg = ptimestamptz, procedure = pdate_le_ptimestamptz,
+   commutator = >= , negator = > ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR = (
+   leftarg = pdate, rightarg = ptimestamptz, procedure = pdate_eq_ptimestamptz,
+   commutator = = ,
+   -- leave out negator since we didn't create <> operator
+   -- negator = <> ,
+   restrict = eqsel, join = eqjoinsel
+);
+CREATE OPERATOR >= (
+   leftarg = pdate, rightarg = ptimestamptz, procedure = pdate_ge_ptimestamptz,
+   commutator = <= , negator = < ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+CREATE OPERATOR > (
+   leftarg = pdate, rightarg = ptimestamptz, procedure = pdate_gt_ptimestamptz,
+   commutator = < , negator = <= ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+
+-- create the support function too
+CREATE FUNCTION pdate_cmp_ptimestamptz(pdate, ptimestamptz) RETURNS int4
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+-- now we can make the operator class
+CREATE OPERATOR CLASS pdate_ops_ptimestamptz
+    FOR TYPE pdate USING btree AS
+        OPERATOR        1       < ,
+        OPERATOR        2       <= ,
+        OPERATOR        3       = ,
+        OPERATOR        4       >= ,
+        OPERATOR        5       > ,
+        FUNCTION        1       pdate_cmp_ptimestamptz(pdate, ptimestamptz);
+
+---------------PTIMESTAMP cmp PDATE ------------------------
+CREATE FUNCTION ptimestamp_lt_pdate(ptimestamp, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamp_le_pdate(ptimestamp, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamp_eq_pdate(ptimestamp, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamp_ge_pdate(ptimestamp, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamp_gt_pdate(ptimestamp, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR < (
+   leftarg = ptimestamp, rightarg = pdate, procedure = ptimestamp_lt_pdate,
+   commutator = > , negator = >= ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR <= (
+   leftarg = ptimestamp, rightarg = pdate, procedure = ptimestamp_le_pdate,
+   commutator = >= , negator = > ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR = (
+   leftarg = ptimestamp, rightarg = pdate, procedure = ptimestamp_eq_pdate,
+   commutator = = ,
+   -- leave out negator since we didn't create <> operator
+   -- negator = <> ,
+   restrict = eqsel, join = eqjoinsel
+);
+CREATE OPERATOR >= (
+   leftarg = ptimestamp, rightarg = pdate, procedure = ptimestamp_ge_pdate,
+   commutator = <= , negator = < ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+CREATE OPERATOR > (
+   leftarg = ptimestamp, rightarg = pdate, procedure = ptimestamp_gt_pdate,
+   commutator = < , negator = <= ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+
+-- create the support function too
+CREATE FUNCTION ptimestamp_cmp_pdate(ptimestamp, pdate) RETURNS int4
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+-- now we can make the operator class
+CREATE OPERATOR CLASS ptimestamp_ops_pdate
+    FOR TYPE ptimestamp USING btree AS
+        OPERATOR        1       < ,
+        OPERATOR        2       <= ,
+        OPERATOR        3       = ,
+        OPERATOR        4       >= ,
+        OPERATOR        5       > ,
+        FUNCTION        1       ptimestamp_cmp_pdate(ptimestamp, pdate);
+
+----------------------- PTIMESTAMPTZ cmd PDATE --------------------
+
+CREATE FUNCTION ptimestamptz_lt_pdate(ptimestamptz, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamptz_le_pdate(ptimestamptz, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamptz_eq_pdate(ptimestamptz, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamptz_ge_pdate(ptimestamptz, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamptz_gt_pdate(ptimestamptz, pdate) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR < (
+   leftarg = ptimestamptz, rightarg = pdate, procedure = ptimestamptz_lt_pdate,
+   commutator = > , negator = >= ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR <= (
+   leftarg = ptimestamptz, rightarg = pdate, procedure = ptimestamptz_le_pdate,
+   commutator = >= , negator = > ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR = (
+   leftarg = ptimestamptz, rightarg = pdate, procedure = ptimestamptz_eq_pdate,
+   commutator = = ,
+   -- leave out negator since we didn't create <> operator
+   -- negator = <> ,
+   restrict = eqsel, join = eqjoinsel
+);
+CREATE OPERATOR >= (
+   leftarg = ptimestamptz, rightarg = pdate, procedure = ptimestamptz_ge_pdate,
+   commutator = <= , negator = < ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+CREATE OPERATOR > (
+   leftarg = ptimestamptz, rightarg = pdate, procedure = ptimestamptz_gt_pdate,
+   commutator = < , negator = <= ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+
+-- create the support function too
+CREATE FUNCTION ptimestamptz_cmp_pdate(ptimestamptz, pdate) RETURNS int4
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+-- now we can make the operator class --MOHSEN TODO:
+CREATE OPERATOR CLASS ptimestamptz_ops_pdate
+    FOR TYPE ptimestamp USING btree AS
+        OPERATOR        1       < ,
+        OPERATOR        2       <= ,
+        OPERATOR        3       = ,
+        OPERATOR        4       >= ,
+        OPERATOR        5       > ,
+        FUNCTION        1       ptimestamptz_cmp_pdate(ptimestamptz, pdate);
+
+------------------------------------------------------------
+-- Creating crosstype comparison functions for type PTIMESTAMP and PTIMESTAMPTZ
+------------------------------------------------------------
+CREATE FUNCTION ptimestamp_lt_ptimestamptz(ptimestamp, ptimestamptz) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamp_le_ptimestamptz(ptimestamp, ptimestamptz) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamp_eq_ptimestamptz(ptimestamp, ptimestamptz) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamp_ge_ptimestamptz(ptimestamp, ptimestamptz) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamp_gt_ptimestamptz(ptimestamp, ptimestamptz) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR < (
+   leftarg = ptimestamp, rightarg = ptimestamptz, procedure = ptimestamp_lt_ptimestamptz,
+   commutator = > , negator = >= ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR <= (
+   leftarg = ptimestamp, rightarg = ptimestamptz, procedure = ptimestamp_le_ptimestamptz,
+   commutator = >= , negator = > ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR = (
+   leftarg = ptimestamp, rightarg = ptimestamptz, procedure = ptimestamp_eq_ptimestamptz,
+   commutator = = ,
+   -- leave out negator since we didn't create <> operator
+   -- negator = <> ,
+   restrict = eqsel, join = eqjoinsel
+);
+CREATE OPERATOR >= (
+   leftarg = ptimestamp, rightarg = ptimestamptz, procedure = ptimestamp_ge_ptimestamptz,
+   commutator = <= , negator = < ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+CREATE OPERATOR > (
+   leftarg = ptimestamp, rightarg = ptimestamptz, procedure = ptimestamp_gt_ptimestamptz,
+   commutator = < , negator = <= ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+
+-- create the support function too
+CREATE FUNCTION ptimestamp_cmp_ptimestamptz(ptimestamp, ptimestamptz) RETURNS int4
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+-- now we can make the operator class 
+CREATE OPERATOR CLASS ptimestamp_ops_ptimestamptz
+    FOR TYPE ptimestamp USING btree AS
+        OPERATOR        1       < ,
+        OPERATOR        2       <= ,
+        OPERATOR        3       = ,
+        OPERATOR        4       >= ,
+        OPERATOR        5       > ,
+        FUNCTION        1       ptimestamp_cmp_ptimestamptz(ptimestamp, ptimestamptz);
+
+
+CREATE FUNCTION ptimestamptz_lt_ptimestamp(ptimestamptz, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamptz_le_ptimestamp(ptimestamptz, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamptz_eq_ptimestamp(ptimestamptz, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamptz_ge_ptimestamp(ptimestamptz, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION ptimestamptz_gt_ptimestamp(ptimestamptz, ptimestamp) RETURNS bool
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR < (
+   leftarg = ptimestamptz, rightarg = ptimestamp, procedure = ptimestamptz_lt_ptimestamp,
+   commutator = > , negator = >= ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR <= (
+   leftarg = ptimestamptz, rightarg = ptimestamp, procedure = ptimestamptz_le_ptimestamp,
+   commutator = >= , negator = > ,
+   restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR = (
+   leftarg = ptimestamptz, rightarg = ptimestamp, procedure = ptimestamptz_eq_ptimestamp,
+   commutator = = ,
+   -- leave out negator since we didn't create <> operator
+   -- negator = <> ,
+   restrict = eqsel, join = eqjoinsel
+);
+CREATE OPERATOR >= (
+   leftarg = ptimestamptz, rightarg = ptimestamp, procedure = ptimestamptz_ge_ptimestamp,
+   commutator = <= , negator = < ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+CREATE OPERATOR > (
+   leftarg = ptimestamptz, rightarg = ptimestamp, procedure = ptimestamptz_gt_ptimestamp,
+   commutator = < , negator = <= ,
+   restrict = scalargtsel, join = scalargtjoinsel
+);
+
+-- create the support function too
+CREATE FUNCTION ptimestamptz_cmp_ptimestamp(ptimestamptz, ptimestamp) RETURNS int4
+   AS '_OBJWD_/pdate' LANGUAGE C IMMUTABLE STRICT;
+
+-- now we can make the operator class --MOHSEN TODO:
+CREATE OPERATOR CLASS ptimestamptz_ops_ptimestamp
+    FOR TYPE ptimestamp USING btree AS
+        OPERATOR        1       < ,
+        OPERATOR        2       <= ,
+        OPERATOR        3       = ,
+        OPERATOR        4       >= ,
+        OPERATOR        5       > ,
+        FUNCTION        1       ptimestamptz_cmp_ptimestamp(ptimestamptz, ptimestamp);
+
+------------------------------------------------------------
+-- Creating functions for types
+------------------------------------------------------------
+CREATE FUNCTION age(ptimestamp, ptimestamp) RETURNS interval
+   AS '_OBJWD_/pdate', 'ptimestamp_age' LANGUAGE C;
+
+CREATE FUNCTION age(ptimestamptz, ptimestamptz) RETURNS interval
+   AS '_OBJWD_/pdate', 'ptimestamptz_age' LANGUAGE C;
+
+CREATE FUNCTION datetime_pl(pdate, time) RETURNS ptimestamp
+   AS '_OBJWD_/pdate', 'pdatetime_ptimestamp' LANGUAGE C;
+
+CREATE FUNCTION date_part(text, ptimestamp) RETURNS float8 
+   AS '_OBJWD_/pdate', 'ptimestamp_part' LANGUAGE C;
+
+CREATE FUNCTION date_part(text, ptimestamptz) RETURNS float8 
+   AS '_OBJWD_/pdate', 'ptimestamptz_part' LANGUAGE C;
+
+CREATE FUNCTION date_trunc(text, ptimestamp) RETURNS ptimestamp 
+   AS '_OBJWD_/pdate', 'ptimestamp_trunc' LANGUAGE C;
+
+CREATE FUNCTION date_trunc(text, ptimestamptz) RETURNS ptimestamptz
+   AS '_OBJWD_/pdate', 'ptimestamptz_trunc' LANGUAGE C;
+
+CREATE FUNCTION "overlaps"(ptimestamp, ptimestamp, ptimestamp, ptimestamp) RETURNS boolean
+   AS '_OBJWD_/pdate', 'overlaps_ptimestamp' LANGUAGE C;
+
+CREATE FUNCTION "overlaps"(ptimestamp, interval, ptimestamp, ptimestamp) RETURNS boolean
+   AS '_OBJWD_/pdate', 'overlaps_ptimestamp' LANGUAGE C;
+
+CREATE FUNCTION "overlaps"(pdate, pdate, pdate, pdate) RETURNS boolean
+   AS '_OBJWD_/pdate', 'overlaps_ptimestamp' LANGUAGE C;
+
+CREATE FUNCTION "overlaps"(pdate, interval, pdate, pdate) RETURNS boolean
+   AS '_OBJWD_/pdate', 'overlaps_ptimestamp' LANGUAGE C;
+
+CREATE FUNCTION pdate_ptimestamp(pdate) RETURNS ptimestamp
+   AS '_OBJWD_/pdate', 'pdate_ptimestamp' LANGUAGE C;
+
+CREATE FUNCTION pdate_ptimestamptz(pdate) RETURNS ptimestamptz
+   AS '_OBJWD_/pdate', 'pdate_ptimestamptz' LANGUAGE C;
+
+CREATE FUNCTION ptimestamp_pdate(ptimestamp) RETURNS pdate
+   AS '_OBJWD_/pdate', 'ptimestamp_pdate' LANGUAGE C;
+
+CREATE FUNCTION ptimestamptz_pdate(ptimestamptz) RETURNS pdate
+   AS '_OBJWD_/pdate', 'ptimestamptz_pdate' LANGUAGE C;
+
+CREATE FUNCTION pdate_date(pdate) RETURNS date
+   AS '_OBJWD_/pdate', 'pdate_date' LANGUAGE C;
+
+CREATE FUNCTION date_pdate(date) RETURNS pdate
+   AS '_OBJWD_/pdate', 'date_pdate' LANGUAGE C;
+
+CREATE FUNCTION ptimestamp_timestamp(ptimestamp) RETURNS timestamp
+   AS '_OBJWD_/pdate', 'ptimestamp_timestamp' LANGUAGE C;
+
+CREATE FUNCTION timestamp_ptimestamp(timestamp) RETURNS ptimestamp
+   AS '_OBJWD_/pdate', 'timestamp_ptimestamp' LANGUAGE C;
+
+CREATE FUNCTION ptimestamptz_timestamptz(ptimestamp) RETURNS timestamp
+   AS '_OBJWD_/pdate', 'ptimestamp_timestamp' LANGUAGE C;
+
+CREATE FUNCTION timestamptz_ptimestamptz(timestamptz) RETURNS ptimestamptz
+   AS '_OBJWD_/pdate', 'timestamptz_ptimestamptz' LANGUAGE C;
+
+CREATE FUNCTION ptimestamp_time(ptimestamp) RETURNS time
+   AS '_OBJWD_/pdate', 'ptimestamp_time' LANGUAGE C;
+
+CREATE FUNCTION ptimestamptz_time(ptimestamptz) RETURNS time
+   AS '_OBJWD_/pdate', 'ptimestamptz_time' LANGUAGE C;
+
+CREATE FUNCTION ptimestamptz_timetz(ptimestamptz) RETURNS timetz
+   AS '_OBJWD_/pdate', 'ptimestamptz_timetz' LANGUAGE C;
+
+CREATE FUNCTION pnow() RETURNS ptimestamptz AS $$SELECT ptimestamptz 'now';$$ LANGUAGE SQL;
+CREATE FUNCTION current_pdate() RETURNS pdate AS $$SELECT pdate 'now';$$ LANGUAGE SQL;
+CREATE FUNCTION current_ptimestamp() RETURNS ptimestamp AS $$SELECT ptimestamp 'now';$$ LANGUAGE SQL;
+-- TODO CREATE FUNCTION to_char(ptimestamp, text) RETURN 
+------------------------------------------------------------
+-- Creating CAST functions for all Date Types: PDATE, 
+-- PTIMESTAMP, PTIMESTAMPTZ, DATE, TIMESTAMP, TIMESTAMPTZ
+------------------------------------------------------------
+CREATE CAST (pdate AS ptimestamp)
+    WITH FUNCTION pdate_ptimestamp (pdate);
+
+CREATE CAST (pdate AS ptimestamptz)
+    WITH FUNCTION pdate_ptimestamptz (pdate);
+
+CREATE CAST (ptimestamp AS pdate)
+    WITH FUNCTION ptimestamp_pdate (ptimestamp);
+
+CREATE CAST (ptimestamptz AS pdate)
+    WITH FUNCTION ptimestamptz_pdate (ptimestamptz);
+
+CREATE CAST (pdate AS date)
+    WITH FUNCTION pdate_date (pdate);
+
+CREATE CAST (date AS pdate)
+    WITH FUNCTION date_pdate (date);
+
+CREATE CAST (ptimestamp AS timestamp)
+    WITH FUNCTION ptimestamp_timestamp (ptimestamp);
+
+CREATE CAST (timestamp AS ptimestamp)
+    WITH FUNCTION timestamp_ptimestamp (timestamp);
+
+CREATE CAST (ptimestamptz AS timestamptz)
+    WITH FUNCTION ptimestamp_timestamp (ptimestamp);
+
+CREATE CAST (timestamptz AS ptimestamptz)
+    WITH FUNCTION timestamp_ptimestamp (timestamptz);
+
+CREATE CAST (ptimestamp AS time)
+    WITH FUNCTION ptimestamp_time (ptimestamp);
+
+CREATE CAST (ptimestamptz AS time)
+    WITH FUNCTION ptimestamptz_time (ptimestamptz);
+
+CREATE CAST (ptimestamptz AS timetz)
+    WITH FUNCTION ptimestamptz_timetz (ptimestamptz);
+
+--CAST from PDATATIME(TZ) to PTIMESTAMP(TZ)
+
+
+-- clean up the definitions
+--DROP TABLE test_pdate;
+--DROP TYPE pdate CASCADE;
+--DROP TYPE ptimestamp CASCADE;
+--DROP TYPE ptimestamptz CASCADE;
