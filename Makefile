@@ -1,5 +1,5 @@
 
-TARGET: pdate.sql pdate.so 
+TARGET: pdate.so 
 
 pdate.so : pdate.o pdatetime.o ptimestamp.o
 	gcc -shared -o pdate.so pdate.o pdatetime.o ptimestamp.o
